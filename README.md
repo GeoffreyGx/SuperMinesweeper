@@ -1,6 +1,6 @@
 # DEMINEUR INFINI
-> Le Démineur (Minesweeper) est un jeu vidéo de réflexion dont le but est de localiser des mines cachées dans une grille représentant un champ de mines virtuel, avec pour seule indication le nombre de mines dans les zones adjacentes.<br />
-> *Source : [Article Démineur (genre de jeu vidéo) de Wikipédia en français](https://fr.wikipedia.org/wiki/D%C3%A9mineur_(genre_de_jeu_vid%C3%A9o)).*
+> Le Démineur (Minesweeper) est un jeu vidéo de réflexion dont le but est de localiser des mines cachées dans une grille représentant un champ de mines virtuel, avec pour seule indication le nombre de mines dans les zones adjacentes.<br /> *Source : [Article Démineur (genre de jeu vidéo) de Wikipédia en français](https://fr.wikipedia.org/wiki/D%C3%A9mineur_(genre_de_jeu_vid%C3%A9o)).*
+
 On va essayer de se rapprocher le plus possible de cette définition en rajoutant une grille infinie et d'autres fonctionalitée.
 ## Fonctionnalités:
 ### Obligatoire:
