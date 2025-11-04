@@ -4,11 +4,23 @@
 On va essayer de se rapprocher le plus possible de cette définition en rajoutant une grille infinie et d'autres fonctionalitée.
 ## Fonctionnalités:
 ### Obligatoire:
-- Génération des mines et cases a l'infini de manière procédurale (permet de ne pas tout charger/stocker)
-- Stockage de la progression du joueur de manière optimisée
-- Système de score
+
+#### Démineur classique
+- Grille de mines aléatoires
+- Révélation des cases au clic
+- Chaque case affiche le nombre de mines voisines
+- Possibilité de marquer une case avec un drapeau
+- Punition lorsqu’une mine est révélée
+- Système de "chording" : cliquer sur une case révélée avec le meme nombre de drapeaux autours révèle toutes les cases non marquées adjacentes
+
+#### Fonctionalitées rajotuées par notre version
+- Génération des mines et cases a l'infini de manière procédurale lorsque le joueur clique sur une case
+- Stockage de la progression du joueur de manière optimisée (zones découvertes, score, statistiques)
+- Système de score + statistiques (cases découvertes, zones complétées...)
 - Menu (accueil, pause, paramètres...)
 - Paramètres (thème, difficulté)
+- A
+
 ### Intermédiaires:
 - Système de biomes dans lesquels les règles sont différentes : 2 à 3 mines par case, plus de chances de mines…
 ### Bonus:
