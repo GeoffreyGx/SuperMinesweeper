@@ -30,3 +30,6 @@ On va essayer de se rapprocher le plus possible de cette définition en rajoutan
 ## Outils utilisés:
 - Python 3.14 avec les modules requests et random
 - [Pygame](https://www.pygame.org)
+<br />
+
+*Auteurs : Ugo Almeras, Geoffrey Gambicchia*
