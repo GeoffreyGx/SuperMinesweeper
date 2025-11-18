@@ -1,33 +1,65 @@
 import pygame
-
+from typing import Callable, Optional, Tuple
 class Button:
-    def __init__(self, x, y, width, height, color, label: str, label_color = "white", font = "Helvetica", font_size = 20):
-        self.color = color
-        self.rect = pygame.Rect(x - width/2, y - height/2, width, height)
-        self.font = pygame.font.SysFont(font, font_size)
-        self.text = self.font.render(label, True, label_color)
-        self.text_rect = self.text.get_rect(center=self.rect.center)
+    """A simple, reusable UI Button for pygame scene-based apps.
 
-    def render(self, screen: pygame.Surface):
-        self.screen = screen                                                            
-        pygame.draw.rect(self.screen, self.color, self.rect)
-        self.screen.blit(self.text, self.text_rect)
+    Usage:
+      btn = Button(x, y, width, height, label="Click", callback=on_click)
+      In your scene.input(events):
+          for e in events:
+              btn.handle_event(e)
+      In your scene.render(screen):
+          btn.draw(screen)
+    """
 
-    def hoverEvent(self, event):
-        if self.rect.collidepoint(event.pos):
-            return True
+    def __init__(self, x: float, y: float, width: int, height: int, label: str = "", bg: str = "#464646", fg: str = "white", hover_bg: str = "#535353", pressed_bg: str = "black", font_name: Optional[str] = None, font_size: int = 20):
+        self.rect = pygame.Rect(0, 0, int(width), int(height))
+        self.rect.center = (int(x), int(y))
+
+        self.bg = bg
+        self.fg = fg
+        self.hover_bg = hover_bg
+        self.pressed_bg = pressed_bg
+
+        self.font = pygame.font.SysFont(font_name or pygame.font.get_default_font(), font_size)
+        self.label = label
+        self._render_label()
+
+        self.hovered = False
+        self.pressed = False
+
+    def _render_label(self):
+        self.text_surf = self.font.render(self.label, True, self.fg)
+        self.text_rect = self.text_surf.get_rect(center=self.rect.center)
+
+    def set_center(self, x: float, y: float):
+        self.rect.center = (int(x), int(y))
+        self.text_rect.center = self.rect.center
+
+    def handle_event(self, event: pygame.event.Event) -> bool:
+        """Handle a single pygame event. Returns True if the button was clicked."""
+        if event.type == pygame.MOUSEMOTION:
+            self.hovered = self.rect.collidepoint(event.pos)
+        elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+            if self.rect.collidepoint(event.pos):
+                return True
+        return False
+
+    def draw(self, screen: pygame.Surface):
+        # pick color based on state
+        if self.pressed:
+            color = self.pressed_bg
+        elif self.hovered:
+            color = self.hover_bg
         else:
-            return False
+            color = self.bg
 
-    def alterColor(self, color):
-        pygame.draw.rect(self.screen, color, self.rect)
+        pygame.draw.rect(screen, color, self.rect, border_radius=6)
+        screen.blit(self.text_surf, self.text_rect)
 
-    def reset(self):
-        pygame.draw.rect(self.screen, self.color, self.rect)
 
 class BasicButton(Button):
-    def __init__(self, x, y, label = "Default Label"):
-        super().__init__(x, y, 100, 50, "#464646", label)
+    """Small centered button with sensible defaults."""
 
-    def alterColor(self, color = "#797979"):
-        return super().alterColor(color)
+    def __init__(self, x: float, y: float, label: str = "Button"):
+        super().__init__(x, y, 140, 48, label, bg="#464646", fg="#FFFFFF", font_size=18)

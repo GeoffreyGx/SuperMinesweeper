@@ -13,7 +13,6 @@ pygame.font.init()
 pygame.display.set_caption("SuperMinesweeper " + VERSION)
 screen = pygame.display.set_mode((1280, 720))
 clock = pygame.time.Clock()
-# game_cursor = cursor.Cursor() 
 
 
 def main():
@@ -28,32 +27,6 @@ def main():
         for event in events:
             if event.type == pygame.QUIT:
                 running = False
-        # screen.fill("#DCDCDC")
-
-        # mouse_rel = pygame.mouse.get_rel()
-        # mouse = pygame.mouse.get_pressed()
-        # if mouse[0]:
-        #     game_cursor.change('hand_drag')
-        #     game_camera.down(mouse_rel[1])
-        #     game_camera.left(mouse_rel[0])
-        
-        # keys = pygame.key.get_pressed()
-        # if keys[pygame.K_z]:
-        #     game_camera.up()
-        # if keys[pygame.K_s]:
-        #     game_camera.down()
-        # if keys[pygame.K_q]:
-        #     game_camera.left()
-        # if keys[pygame.K_d]:
-        #     game_camera.right()
-
-        # pygame.draw.circle(screen, '#000000', game_camera.vector(10, 20), 20)
-        # pygame.draw.circle(screen, "#9713C7", game_camera.vector(103, 120), 15)
-        
-        # game_cursor.update(screen)
-        # game_cursor.change('arrow')
-        
-        # Pass the collected events to the active scene so it can handle KEYDOWN etc.
         
         active_scene.input(events, pygame.key.get_pressed())
         active_scene.update()
