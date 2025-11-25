@@ -1,5 +1,4 @@
 from scene import *
-from .GameScreen import *
 from elements.UI import Button
 import logging
 import pygame
@@ -15,10 +14,10 @@ class MainMenu(Scene):
     def input(self, events, kb_input):
         for event in events:
             if self.SINGLEPLAYER_BUTTON.handle_event(event) == True:
+                from .GameScreen import GameScreen
                 self.switch(GameScreen())
             if self.MULTIPLAYER_BUTTON.handle_event(event) == True:
                 logger.debug("Multiplayer button has been pressed")
-                print("tg")
             if self.SETTINGS_BUTTON.handle_event(event) == True:
                 logger.debug("Settings button has been pressed")
 

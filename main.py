@@ -6,7 +6,7 @@ import utils.camera as camera
 import utils.cursor as cursor
 import scenes.MainMenu as MainMenu
 
-logging.basicConfig(level=logging.INFO, format='[%(asctime)s][%(module)s] %(levelname)s - %(message)s', datefmt="%H:%M:%S")
+logging.basicConfig(level=logging.DEBUG, format='[%(asctime)s][%(module)s] %(levelname)s - %(message)s', datefmt="%H:%M:%S")
 logger = logging.getLogger(__name__)
 pygame.init()
 pygame.font.init()
