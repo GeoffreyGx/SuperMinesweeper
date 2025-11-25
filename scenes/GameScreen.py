@@ -14,7 +14,10 @@ class GameScreen(Scene):
         self.PAUSE_BUTTON = ClickableAsset("pause_button", 30, 30, 30, 30)
         self.SAVE_BUTTON = ClickableAsset("save_button", 70, 30, 30, 30)
         self.HELP_BUTTON = ClickableAsset("help_button", 110, 30, 30, 30)
-        world = sweeper_world.World(42)
+        self.world = sweeper_world.World(42)
+        for x in range(0,17):
+            for y in range(0,17):
+                self.world.uncoverAt(x, y)
 
     def input(self, events, kb_input):
         if kb_input[pygame.K_s]:
@@ -36,8 +39,7 @@ class GameScreen(Scene):
     def render(self, screen):
         screen.fill("#4A4AD6")
         self.world.render(screen, self.camera)
-        pygame.draw.circle(screen, "black", self.camera.vector(12, 24), 15)
-        pygame.draw.circle(screen, "white", self.camera.vector(101, 54), 5)
+        pygame.draw.circle(screen, "black", self.camera.vector(0, 0), 2)
         self.PAUSE_BUTTON.render(screen)
         self.SAVE_BUTTON.render(screen)
         self.HELP_BUTTON.render(screen)

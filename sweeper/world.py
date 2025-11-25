@@ -20,6 +20,7 @@ class Tile:
                 nx = x + dx
                 ny = y + dy
                 mineCount += world.getMineValue(nx, ny)
+        return mineCount
         
 
 
@@ -55,7 +56,7 @@ class World:
             self.chunks[chunkLoc] = Chunk(chunkLoc[0], chunkLoc[1], self)
         chunk = self.chunks[chunkLoc]
         if subchunk not in chunk.tiles:
-            self.chunks[subchunk].generateTile(x, y, self.gameseed)
+            chunk.generateTile(x, y, self.gameseed)
         
 
     def getBiomeAt(self, x:int, y:int) -> float:
@@ -70,14 +71,21 @@ class World:
     
 
     def render(self, screen, camera):
-        camPos = camera.vector(0,0)
-        renderCorner = (camPos // 16 - 1)*16
-        screen.blit(pygame.image.load("empty.png"), renderCorner)
-
-    
-
-
-w = World(42)
-w.uncoverAt(0, 0)
+        emptytile = pygame.image.load(f"assets/tiles/empty.png")
+        camPos = -camera.vector(0,0)
+        renderCorner = (camPos // 32)*32
+        for x in range(-32, screen.get_width()+32, 32):
+            for y in range(-32, screen.get_height()+32, 32):
+                screen.blit(emptytile, camera.vector(renderCorner[0]+x, renderCorner[1]+y))
+        for x in range(-32, screen.get_width()+32, 512):
+            for y in range(-32, screen.get_height()+32, 512):
+                chunkLoc = ((renderCorner[0]+x)//512, (renderCorner[1]+y)//512)
+                if chunkLoc in self.chunks:
+                    for tilePos, tile in self.chunks[chunkLoc].tiles.items():
+                        if tile.type == "empty" and tile.value == 0:   
+                            tileImage = pygame.image.load(f"assets/tiles/{tile.value}.png")
+                        else:
+                            tileImage = pygame.image.load(f"assets/tiles/mine.png")
+                        screen.blit(tileImage, camera.vector(tilePos[0]*32+chunkLoc[0]*512, tilePos[1]*32+chunkLoc[1]*512))
         
 
