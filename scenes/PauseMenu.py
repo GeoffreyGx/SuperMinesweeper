@@ -1,13 +1,36 @@
 import pygame
+import os
+import dotenv
 from scene import Scene
 from elements.UI import Button
 
+dotenv.load_dotenv(".env")
+
+SCREEN_WIDTH = int(str(os.getenv("SCREEN_WIDTH")))
+SCREEN_HEIGHT = int(str(os.getenv("SCREEN_HEIGHT")))
+
 class PauseMenu(Scene):
-    def __init__(self):
+    def __init__(self, previous_scene: Scene):
         super().__init__()
-        self.overlay = pygame.Surface(pygame.)
-        self.BUTTON = Button(20, 20, 20, 20, "tkt")
+        self.previous_scene = previous_scene
+
+        self.overlay = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.SRCALPHA)
+        self.overlay.fill((0, 0, 0, 128))
+        self.RESUME_BUTTON = Button(SCREEN_WIDTH/2, SCREEN_HEIGHT*0.33, 100, 50, "Resume")
+        self.MENU_BUTTON = Button(SCREEN_WIDTH/2, SCREEN_HEIGHT*0.33+70, 100, 50, "Menu")
+
+
+    def input(self, events, kb_input):
+        for event in events:
+            if self.RESUME_BUTTON.handle_event(event) == True:
+                from .GameScreen import GameScreen
+                self.switch(GameScreen())
+            if self.MENU_BUTTON.handle_event(event) == True:
+                from .MainMenu import MainMenu
+                self.switch(MainMenu())
 
     def render(self, screen: pygame.Surface):
-        screen.fill("#313131")
-        self.BUTTON.draw(screen)
+        self.previous_scene.render(screen)
+        screen.blit(self.overlay, (0, 0))
+        self.RESUME_BUTTON.draw(screen)
+        self.MENU_BUTTON.draw(screen)

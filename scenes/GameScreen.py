@@ -16,6 +16,9 @@ class GameScreen(Scene):
         self.HELP_BUTTON = ClickableAsset("help_button", 110, 30, 30, 30)
         world = sweeper_world.World(42)
 
+    def update(self):
+        self.previous_scene = self
+
     def input(self, events, kb_input):
         if kb_input[pygame.K_s]:
             self.camera.up()
@@ -29,7 +32,7 @@ class GameScreen(Scene):
         for event in events:
             if self.PAUSE_BUTTON.handle_event(event) == True:
                 from .PauseMenu import PauseMenu
-                self.switch(PauseMenu())
+                self.switch(PauseMenu(self.previous_scene))
                 logger.debug("Pause Menu was invoked!")
 
 
