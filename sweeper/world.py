@@ -8,6 +8,7 @@ class Tile:
         self.rng = randomUtil.random.Random(randomUtil.coordinateRng(x, y, world.gameseed))
         self.biome = world.getBiomeAt(self.x, self.y)
         self.type = "mine" if self.rng.random() < World.BIOMEDATA[self.biome]["mineDensity"] else "empty"
+        print(self.type)
         self.value = 1 if self.type == "mine" else self.countAdjacentMines(x, y, world)
 
 
@@ -44,6 +45,9 @@ class World:
         "nul": {"mineDensity": 0.05},
         "jsp": {"mineDensity": 0.15}
     }
+    EMPTYTILE = pygame.image.load(f"assets/tiles/empty.png")
+    FULLBG = pygame.image.load(f"assets/tiles/fullBG.png")
+
     def __init__(self, gameseed:int, biomeScale: int=20):
         self.gameseed = gameseed
         self.biomeGen = randomUtil.VoronoiGen(self.gameseed, biomeScale)
@@ -71,18 +75,20 @@ class World:
     
 
     def render(self, screen, camera):
-        emptytile = pygame.image.load(f"assets/tiles/empty.png")
+        
         camPos = -camera.vector(0,0)
         renderCorner = (camPos // 32)*32
-        for x in range(-32, screen.get_width()+32, 32):
-            for y in range(-32, screen.get_height()+32, 32):
-                screen.blit(emptytile, camera.vector(renderCorner[0]+x, renderCorner[1]+y))
+        screen.blit(World.FULLBG, camera.vector(renderCorner[0], renderCorner[1]))
+        #screen.blit(fullBG, camera.vector(renderCorner[0], renderCorner[1]))
+#        for x in range(-32, screen.get_width()+32, 32):
+#            for y in range(-32, screen.get_height()+32, 32):
+#                screen.blit(EMPTYTILE, camera.vector(renderCorner[0]+x, renderCorner[1]+y))
         for x in range(-32, screen.get_width()+32, 512):
             for y in range(-32, screen.get_height()+32, 512):
                 chunkLoc = ((renderCorner[0]+x)//512, (renderCorner[1]+y)//512)
                 if chunkLoc in self.chunks:
                     for tilePos, tile in self.chunks[chunkLoc].tiles.items():
-                        if tile.type == "empty" and tile.value == 0:   
+                        if tile.type == "empty":   
                             tileImage = pygame.image.load(f"assets/tiles/{tile.value}.png")
                         else:
                             tileImage = pygame.image.load(f"assets/tiles/mine.png")
