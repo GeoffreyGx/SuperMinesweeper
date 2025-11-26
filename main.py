@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 pygame.init()
 pygame.font.init()
 pygame.display.set_caption("SuperMinesweeper " + str(os.getenv("VERSION")))
-screen = pygame.display.set_mode((1280, 960))
+screen = pygame.display.set_mode((640, 360))
 clock = pygame.time.Clock()
 
 def main():

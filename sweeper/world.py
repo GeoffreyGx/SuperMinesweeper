@@ -8,7 +8,6 @@ class Tile:
         self.rng = randomUtil.random.Random(randomUtil.coordinateRng(x, y, world.gameseed))
         self.biome = world.getBiomeAt(self.x, self.y)
         self.type = "mine" if self.rng.random() < World.BIOMEDATA[self.biome]["mineDensity"] else "empty"
-        print(self.type)
         self.value = 1 if self.type == "mine" else self.countAdjacentMines(x, y, world)
 
 
