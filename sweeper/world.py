@@ -1,43 +1,6 @@
 import sweeper.randomUtil as randomUtil
 import pygame
 
-class Tile:
-    def __init__(self, x:int, y:int, world:World):
-        self.x = x
-        self.y = y
-        self.rng = randomUtil.random.Random(randomUtil.coordinateRng(x, y, world.gameseed))
-        self.biome = world.getBiomeAt(self.x, self.y)
-        self.type = "mine" if self.rng.random() < World.BIOMEDATA[self.biome]["mineDensity"] else "empty"
-        self.value = 1 if self.type == "mine" else self.countAdjacentMines(x, y, world)
-
-
-    def countAdjacentMines(self, x:int, y:int, world:World) -> int:
-        mineCount = 0
-        for dx in [-1, 0, 1]:
-            for dy in [-1, 0, 1]:
-                if dx == 0 and dy == 0:
-                    continue
-                nx = x + dx
-                ny = y + dy
-                mineCount += world.getMineValue(nx, ny)
-        return mineCount
-        
-
-
-
-class Chunk:
-    def __init__(self, x:int, y:int,world:World):
-        self.x = x
-        self.y = y
-        self.tiles = {}
-        self.world = world
-
-    def generateTile(self, x:int, y:int, gameseed:int):
-        subchunk = (x%16, y%16)
-        self.tiles[subchunk] = Tile(x, y, self.world)
-
-c = Chunk(0, 0, None)
-
 class World:
     BIOMELIST = ["nul", "jsp"]
     BIOMEDATA = {
@@ -88,4 +51,42 @@ class World:
                             tileImage = pygame.image.load(f"assets/tiles/mine.png")
                         screen.blit(tileImage, camera.vector(tilePos[0]*32+chunkLoc[0]*512, tilePos[1]*32+chunkLoc[1]*512))
         
+
+
+class Tile:
+    def __init__(self, x:int, y:int, world:World):
+        self.x = x
+        self.y = y
+        self.rng = randomUtil.random.Random(randomUtil.coordinateRng(x, y, world.gameseed))
+        self.biome = world.getBiomeAt(self.x, self.y)
+        self.type = "mine" if self.rng.random() < World.BIOMEDATA[self.biome]["mineDensity"] else "empty"
+        self.value = 1 if self.type == "mine" else self.countAdjacentMines(x, y, world)
+
+
+    def countAdjacentMines(self, x:int, y:int, world:World) -> int:
+        mineCount = 0
+        for dx in [-1, 0, 1]:
+            for dy in [-1, 0, 1]:
+                if dx == 0 and dy == 0:
+                    continue
+                nx = x + dx
+                ny = y + dy
+                mineCount += world.getMineValue(nx, ny)
+        return mineCount
+        
+
+
+
+class Chunk:
+    def __init__(self, x:int, y:int,world:World):
+        self.x = x
+        self.y = y
+        self.tiles = {}
+        self.world = world
+
+    def generateTile(self, x:int, y:int, gameseed:int):
+        subchunk = (x%16, y%16)
+        self.tiles[subchunk] = Tile(x, y, self.world)
+
+c = Chunk(0, 0, None)
 
