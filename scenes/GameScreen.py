@@ -15,9 +15,6 @@ class GameScreen(Scene):
         self.SAVE_BUTTON = ClickableAsset("save_button", 70, 30, 30, 30)
         self.HELP_BUTTON = ClickableAsset("help_button", 110, 30, 30, 30)
         self.world = sweeper_world.World(42)
-        for x in range(0,170):
-            for y in range(0,170):
-                self.world.uncoverAt(x, y)
 
     def update(self):
         self.previous_scene = self
