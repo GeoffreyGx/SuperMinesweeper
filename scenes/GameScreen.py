@@ -30,10 +30,14 @@ class GameScreen(Scene):
             self.camera.right()
         
         for event in events:
-            if self.PAUSE_BUTTON.handle_event(event) == True:
+            if self.PAUSE_BUTTON.handle_event(event):
                 from .PauseMenu import PauseMenu
                 self.switch(PauseMenu(self.previous_scene))
                 logger.debug("Pause Menu was invoked!")
+            if self.world.handle_click_event(event):
+                mouseX, mouseY = event.pos
+                worldX, worldY = self.camera.vector(mouseX, mouseY)
+                self.world.uncoverAt(worldX, worldY)
 
 
     def render(self, screen):

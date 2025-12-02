@@ -85,6 +85,12 @@ class World:
             return 1
         return 0
     
+    def handle_click_event(self, event: pygame.event.Event) -> bool:
+        """Handle a single pygame event. Returns True if the button was clicked."""
+        if event.type == pygame.MOUSEBUTTONDOWN:
+                return event.button
+        return False
+    
 
     def render(self, screen, camera):
         
