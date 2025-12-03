@@ -1,6 +1,6 @@
 import pygame
 import logging
-from typing import Optional
+from typing import Optional, Callable
 
 logger = logging.getLogger(__name__)
 
@@ -23,13 +23,16 @@ class ClickableAsset:
         self.hovered = False
 
 
-    def handle_event(self, event: pygame.event.Event) -> bool:
+    def handle_event(self, event: pygame.event.Event, action: Optional[Callable] = None) -> bool:
         """Handle a single pygame event. Returns True if the button was clicked."""
         if event.type == pygame.MOUSEMOTION:
             self.hovered = self.rect.collidepoint(event.pos)
         elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
             if self.rect.collidepoint(event.pos):
-                return True
+                if action is not None:
+                    action()
+                else:
+                    return True
         return False
     
     def render(self, screen: pygame.Surface):
