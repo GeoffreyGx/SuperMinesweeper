@@ -12,7 +12,7 @@ class Button:
           btn.draw(screen)
     """
 
-    def __init__(self, x: float, y: float, width: int, height: int, label: str = "", bg: str = "#464646", fg: str = "white", hover_bg: str = "#535353", pressed_bg: str = "black", font_name: Optional[str] = None, font_size: int = 20):
+    def __init__(self, x: float, y: float, width: int, height: int, label: str = "", bg: str = "#464646", fg: str = "white", hover_bg: str = "#535353", pressed_bg: str = "black", font_name: Optional[str] = None, font_size: int = 20, action: Optional[str] = None):
         self.rect = pygame.Rect(0, 0, int(width), int(height))
         self.rect.center = (int(x), int(y))
 
@@ -27,6 +27,8 @@ class Button:
 
         self.hovered = False
         self.pressed = False
+
+        self.action = action
 
     def _render_label(self):
         self.text_surf = self.font.render(self.label, True, self.fg)
@@ -45,6 +47,11 @@ class Button:
                 return True
         return False
 
+    def getAction(self):
+        if self.action != None:
+            return self.action
+        return False
+
     def draw(self, screen: pygame.Surface):
         # pick color based on state
         if self.pressed:
@@ -61,5 +68,5 @@ class Button:
 class BasicButton(Button):
     """Small centered button with sensible defaults."""
 
-    def __init__(self, x: float, y: float, label: str = "Button"):
-        super().__init__(x, y, 140, 48, label, bg="#464646", fg="#FFFFFF", font_size=18)
+    def __init__(self, x: float, y: float, label: str = "Button", action = None):
+        super().__init__(x, y, 140, 48, label, action=action, bg="#464646", fg="#FFFFFF", font_size=18)

@@ -7,8 +7,8 @@ class Label:
         self.text = text
         self.font = pygame.font.SysFont(pygame.font.get_default_font(), 40)
         
-        self.text_surface = self.font.render('Some Text', False, (0, 0, 0))
+        self.text_surface = self.font.render(self.text, False, (0, 0, 0))
 
 
     def draw(self, display: pygame.Surface) -> None:
-        display.blit(self.text_surface)
+        display.blit(self.text_surface, (self.x, self.y))
