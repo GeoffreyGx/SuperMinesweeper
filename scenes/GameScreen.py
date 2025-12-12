@@ -28,16 +28,22 @@ class GameScreen(Scene):
             self.camera.left()
         if kb_input[pygame.K_d]:
             self.camera.right()
+        self.camera.tick()
         
         for event in events:
             if self.PAUSE_BUTTON.handle_event(event):
                 from .PauseMenu import PauseMenu
                 self.switch(PauseMenu(self.previous_scene))
                 logger.debug("Pause Menu was invoked!")
-            if self.world.handle_click_event(event)==True:
+            if self.world.handle_click_event(event)==1:
                 mouseX, mouseY = event.pos
                 camX, camY = self.camera.vector(0,0)
                 self.world.uncoverAt(int(mouseX-camX)//32, int(mouseY-camY)//32)
+            if self.world.handle_click_event(event)==3:
+                mouseX, mouseY = event.pos
+                camX, camY = self.camera.vector(0,0)
+                self.world.flagAt(int(mouseX-camX)//32, int(mouseY-camY)//32)
+
 
 
     def render(self, screen):
