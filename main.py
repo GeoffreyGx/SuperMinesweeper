@@ -4,6 +4,7 @@ import dotenv
 import os
 import utils.camera as camera
 import utils.cursor as cursor
+import utils.settings as settings
 import scenes.MainMenu as MainMenu
 
 dotenv.load_dotenv(".env")
@@ -15,6 +16,7 @@ pygame.font.init()
 pygame.display.set_caption("SuperMinesweeper " + str(os.getenv("VERSION")))
 screen = pygame.display.set_mode((int(str(os.getenv("SCREEN_WIDTH"))), int(str(os.getenv("SCREEN_HEIGHT")))))
 clock = pygame.time.Clock()
+settings = settings.Settings()
 
 def main():
     logger.info('Welcome to SuperMinesweeper %s', str(os.getenv("VERSION")))
