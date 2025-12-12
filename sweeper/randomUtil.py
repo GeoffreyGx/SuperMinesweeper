@@ -23,35 +23,34 @@ class VoronoiGen:
         self.pointMap = {}
         self.pointBiomeMap = {}
 
-    def get_value(self, x: int, y: int, biomes:list) -> float:
+    def get_value(self, x: int, y: int, biomes: list) -> any:
         """Get Voronoi noise value at given coordinates.
 
         Generate the point grid around the coordinates, find the closest
-        point and return its distance to (x, y).
+        point and return its biome based on Voronoi cell pattern.
         """
         closestDist = float('inf')
         closestPoint = None
 
+        # Check all surrounding grid cells
         for i in range(-1, 2):
             for j in range(-1, 2):
-                gridX = x + i * self.scale
-                gridY = y + j * self.scale
+                gridX = (x // self.scale + i) * self.scale
+                gridY = (y // self.scale + j) * self.scale
 
-                if (gridX, gridY) in self.pointMap:
-                    ptX, ptY = self.pointMap[(gridX, gridY)]
-                else:
-
-                    ptX = (gridX + coordinateRng(gridX, gridY, self.seed) * self.scale)
-                    ptY = (gridY + coordinateRng(gridX, gridY, self.seed + 1) * self.scale)
-
+                # Generate or retrieve point for this grid cell
+                if (gridX, gridY) not in self.pointMap:
+                    ptX = gridX + coordinateRng(gridX, gridY, self.seed) * self.scale
+                    ptY = gridY + coordinateRng(gridX, gridY, self.seed + 1) * self.scale
                     self.pointMap[(gridX, gridY)] = (ptX, ptY)
-                    self.pointBiomeMap[(ptX, ptY)] = coordinateChoice(ptX, ptY, self.seed + 2, biomes)
+                    self.pointBiomeMap[(gridX, gridY)] = coordinateChoice(gridX, gridY, self.seed + 2, biomes)
                 
+                ptX, ptY = self.pointMap[(gridX, gridY)]
                 dist = math.hypot(ptX - x, ptY - y)
                 
                 if dist < closestDist:
                     closestDist = dist
-                    closestPoint = (ptX, ptY)
+                    closestPoint = (gridX, gridY)
 
         return self.pointBiomeMap[closestPoint]
 

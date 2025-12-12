@@ -34,14 +34,15 @@ class GameScreen(Scene):
                 from .PauseMenu import PauseMenu
                 self.switch(PauseMenu(self.previous_scene))
                 logger.debug("Pause Menu was invoked!")
-            if self.world.handle_click_event(event):
+            if self.world.handle_click_event(event)==True:
                 mouseX, mouseY = event.pos
-                worldX, worldY = self.camera.vector(mouseX, mouseY)
-                self.world.uncoverAt(worldX, worldY)
+                camX, camY = self.camera.vector(0,0)
+                self.world.uncoverAt(int(mouseX-camX)//32, int(mouseY-camY)//32)
 
 
     def render(self, screen):
-        screen.fill("#4A4AD6")
+        screen.fill("#C60045")
+        self.world.tickPending()
         self.world.render(screen, self.camera)
         pygame.draw.circle(screen, "black", self.camera.vector(0, 0), 2)
         self.PAUSE_BUTTON.render(screen)
