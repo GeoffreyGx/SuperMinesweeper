@@ -10,9 +10,17 @@ class Tile:
         self.y = y
         self.biome = world.getBiomeAt(self.x, self.y)
         # Determine tile type based on mine density threshold
-        self.type = "mine" if val < World.getbiomedata(self.biome,"mineDensity") else "empty"
+        self.type = "mine" if val < getbiomedata(self.biome,"mineDensity") else "empty"
         # For mines, value is 1; for empty tiles, count adjacent mines
-        self.value = 1 if self.type == "mine" else self.countAdjacentMines(x, y, world)
+
+        if getbiomedata(self.biome,"maxmines")>1:
+            mines = int(val*14558453)%getbiomedata(self.biome,"maxmines")
+        else:
+            mines = 1
+
+
+
+        self.value = mines if self.type == "mine" else self.countAdjacentMines(x, y, world)
         self.uncovered = False
         self.flags = 0
 
@@ -73,6 +81,12 @@ class Chunk:
         return self.tiles[subChunkLoc].flags > 0
 
 
+def getbiomedata(biome:str,key:str):
+    if biome in World.BIOMEDATA:
+        if key in World.BIOMEDATA[biome]:
+            return World.BIOMEDATA[biome][key]
+    return World.BIOMEDEFAULT[key]
+
 class World:
     # Available biomes with mine density and background color
     BIOMELIST = ["vert", "cyan","orange", "rouge", "violet"]
@@ -87,12 +101,6 @@ class World:
     FULLBG = pygame.image.load(f"assets/tiles/fullBG.png")
 
     BIOMEDEFAULT = {"mineDensity": 0.1,"bg":(200, 200, 200),"maxmines": 1}
-
-    def getbiomedata(biome:str,key:str):
-        if biome in World.BIOMEDATA:
-            if key in World.BIOMEDATA[biome]:
-                return World.BIOMEDATA[biome][key]
-        return World.BIOMEDEFAULT[key]
 
     def __init__(self, gameseed:int):
         self.gameseed = gameseed
@@ -142,7 +150,7 @@ class World:
             
         
 
-    def getBiomeAt(self, x:int, y:int) -> float:
+    def getBiomeAt(self, x:int, y:int) -> str:
         """Get biome type at world coordinates using Voronoi generation."""
         return self.biomeGen.get_value(x, y,World.BIOMELIST)
     
@@ -157,8 +165,13 @@ class World:
             for _ in range(tileIndex):
                 rng.random()
             val = rng.random()
-            if val < World.BIOMEDATA[self.getBiomeAt(x, y)]["mineDensity"]:
-                return 1
+            if val < getbiomedata(self.getBiomeAt(x, y),"mineDensity"):
+                v = 1
+                biome = self.getBiomeAt(x,y)
+                if getbiomedata(biome,"maxmines")>1:
+                    v += int(val*14558453)%(getbiomedata(biome,"maxmines"))
+                
+                return v
             return 0
         
     
@@ -178,7 +191,7 @@ class World:
         for x in range(-32, screen.get_width()+32, 32):
            for y in range(-32, screen.get_height()+32, 32):
                 corner = camera.vector(renderCorner[0]+x, renderCorner[1]+y)
-                col = self.BIOMEDATA[self.getBiomeAt((renderCorner[0]+x)//32, (renderCorner[1]+y)//32)]["bg"]
+                col = getbiomedata(self.getBiomeAt((renderCorner[0]+x)//32, (renderCorner[1]+y)//32),"bg")
                 pygame.draw.rect(screen, col, (corner[0], corner[1], 32, 32))
 
         # Draw tiles from loaded chunks
