@@ -38,7 +38,7 @@ class GameScreen(Scene):
             if self.world.handle_click_event(event)==1:
                 mouseX, mouseY = event.pos
                 camX, camY = self.camera.vector(0,0)
-                self.world.uncoverAt(int(mouseX-camX)//32, int(mouseY-camY)//32)
+                self.world.clickAt(int(mouseX-camX)//32, int(mouseY-camY)//32)
             if self.world.handle_click_event(event)==3:
                 mouseX, mouseY = event.pos
                 camX, camY = self.camera.vector(0,0)

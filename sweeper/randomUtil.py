@@ -3,13 +3,13 @@ import random
 def coordinateRng(x: float, y: float, seed: float) -> float:
     """Generate a random value based on coordinates and seed.
     """
-    random.seed((seed*81734) ^ int(x*127492) ^ int(y*5830492)) #Joli ranndom tout beau tout propre :D
+    random.seed(int(seed*81734) ^ int(x*127492) ^ int(y*5830492)) #Joli ranndom tout beau tout propre :D
     return random.random()
 
 def coordinateChoice(x: float, y: float, seed: float, choices: list) -> any:
     """Choose a random element from a list based on coordinates and seed.
     """
-    random.seed((seed*730201) ^ int(x*82345) ^ int(y*777643))
+    random.seed(int(seed*730201) ^ int(x*82345) ^ int(y*777643))
     return random.choice(choices)
 
 

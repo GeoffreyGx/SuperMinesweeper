@@ -13,10 +13,7 @@ class Tile:
         self.type = "mine" if val < getbiomedata(self.biome,"mineDensity") else "empty"
         # For mines, value is 1; for empty tiles, count adjacent mines
 
-        if getbiomedata(self.biome,"maxmines")>1:
-            mines = int(val*14558453)%getbiomedata(self.biome,"maxmines")
-        else:
-            mines = 1
+        mines = world.getMineValue(x, y)
 
 
 
@@ -60,7 +57,7 @@ class Chunk:
         """Generate tiles using seeded RNG for deterministic placement."""
         rng = randomUtil.random.Random(randomUtil.coordinateRng(self.x, self.y, gameseed))
         for x in range(16):
-            for y in range(16):  
+            for y in range(16):
                 r = rng.random()
                 self.tiles[(x,y)] = Tile(x+16*self.x, y+16*self.y,self.world, r)
 
@@ -116,6 +113,9 @@ class World:
             self.pendingUncover.pop(0)
         
 
+    def clickAt(self,x,y):
+        self.uncoverAt(x,y)
+
     def uncoverAt(self, x:int, y:int, spread:bool=True, depth:int=0):
         """Uncover tile; spread to adjacent if value is 0. Prevent deep recursion by queuing."""
         if depth > 10:
@@ -146,7 +146,8 @@ class World:
         subChunkLoc = (x%16, y%16)
         tile = chunk.tiles[subChunkLoc]
         if not tile.uncovered:
-            tile.flags = 1 - tile.flags
+            tile.flags +=1
+            tile.flags %= getbiomedata(self.getBiomeAt(x,y),"maxmines") + 1 
             
         
 
@@ -169,7 +170,7 @@ class World:
                 v = 1
                 biome = self.getBiomeAt(x,y)
                 if getbiomedata(biome,"maxmines")>1:
-                    v += int(val*14558453)%(getbiomedata(biome,"maxmines"))
+                    v += int(val*14558453)%getbiomedata(biome,"maxmines")
                 
                 return v
             return 0
@@ -219,7 +220,7 @@ class World:
                         if tile.type == "empty":   
                             tileImage = pygame.image.load(f"assets/tiles/{tile.value}.png")
                         else:
-                            tileImage = pygame.image.load(f"assets/tiles/mine.png")
+                            tileImage = pygame.image.load(f"assets/tiles/mine_{tile.value}.png")
                         screen.blit(tileImage, camera.vector(tilePos[0]*32+chunkLoc[0]*512, tilePos[1]*32+chunkLoc[1]*512))
                         
                 else:
