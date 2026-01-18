@@ -9,7 +9,7 @@ class Tile:
         self.x = x
         self.y = y
         self.biome = world.getBiomeAt(self.x, self.y)
-        # Determine tile type based on mine density threshold
+        # Determine tile type based on mine density
         self.type = "mine" if val < getbiomedata(self.biome,"mineDensity") else "empty"
         # For mines, value is 1; for empty tiles, count adjacent mines
 
@@ -88,11 +88,11 @@ class World:
     # Available biomes with mine density and background color
     BIOMELIST = ["vert", "cyan","orange", "rouge", "violet"]
     BIOMEDATA = {
-        "vert": {"mineDensity": 0.1,"bg":(34, 139, 34)},
-        "cyan": {"mineDensity": 0.1,"bg":(70, 130, 180),"maxmines": 3},
+        "vert": {"bg":(34, 139, 34)},
+        "cyan": {"bg":(70, 130, 180),"maxmines": 3},
         "orange": {"mineDensity": 0.2,"bg":(255, 140, 0)},
         "rouge": {"mineDensity": 0.3,"bg":(220, 20, 60)},
-        "violet": {"mineDensity": 0.4,"bg":(75, 0, 130)},
+        "violet": {"mineDensity": 0.2,"bg":(75, 0, 130),"maxmines": 2},
     }
     EMPTYTILE = pygame.image.load(f"assets/tiles/empty.png")
     FULLBG = pygame.image.load(f"assets/tiles/fullBG.png")
@@ -111,12 +111,9 @@ class World:
             self.uncoverAt(pos[0], pos[1], True, 0)
         for i in range(min(10, len(self.pendingUncover))):
             self.pendingUncover.pop(0)
-        
 
-    def clickAt(self,x,y):
-        self.uncoverAt(x,y)
 
-    def uncoverAt(self, x:int, y:int, spread:bool=True, depth:int=0):
+    def uncoverAt(self, x:int, y:int, spread:bool=True, depth:int=0,chord=False):
         """Uncover tile; spread to adjacent if value is 0. Prevent deep recursion by queuing."""
         if depth > 10:
             self.pendingUncover.append((x,y))
@@ -125,17 +122,29 @@ class World:
         if chunkLoc not in self.chunks:
             self.chunks[chunkLoc] = Chunk(chunkLoc[0], chunkLoc[1], self)
         chunk = self.chunks[chunkLoc]
-        if not (chunk.uncovered(x,y) or chunk.flagged(x,y)):
+        if not ((chunk.uncovered(x,y) and not chord) or chunk.flagged(x,y)):
             val = chunk.uncover(x, y)
             # If empty with 0 mines nearby, uncover adjacent tiles
-            if val == 0 and spread:
+            if (val == 0 and spread) or chord:
+                if chord:
+                    m = 0
+                    for dx in [-1, 0, 1]:
+                        for dy in [-1, 0, 1]:
+                            if dx == 0 and dy == 0:
+                                continue
+                            nx = x + dx
+                            ny = y + dy
+                            m += self.getFlagValue(nx,ny)
+                    if val!= m:
+                        return
                 for dx in [-1, 0, 1]:
                     for dy in [-1, 0, 1]:
                         if dx == 0 and dy == 0:
                             continue
                         nx = x + dx
                         ny = y + dy
-                        self.uncoverAt(nx, ny,True, depth+1)
+                        if (self.getFlagValue(nx,ny)==0) or val==0:
+                            self.uncoverAt(nx, ny,True, depth+1)
 
     def flagAt(self, x:int, y:int):
         """Toggle flag on tile."""
@@ -156,9 +165,9 @@ class World:
         return self.biomeGen.get_value(x, y,World.BIOMELIST)
     
     def getMineValue(self, x:int, y:int) -> int:
-        """Return 1 if tile is a mine, 0 otherwise. Generate on-the-fly if chunk not loaded."""
+        """Return the tiles mine value, 0 otherwise. Generate if chunk not loaded."""
         if (x//16, y//16) in self.chunks.keys():
-            return 1 if self.chunks[(x//16, y//16)].tiles[(x%16, y%16)].type == "mine" else 0
+            return self.chunks[(x//16, y//16)].tiles[(x%16, y%16)].value if self.chunks[(x//16, y//16)].tiles[(x%16, y%16)].type == "mine" else 0
         else:
             # Generate tile on-demand using seeded RNG
             rng = randomUtil.random.Random(randomUtil.coordinateRng(x//16, y//16, self.gameseed))
@@ -173,6 +182,13 @@ class World:
                     v += int(val*14558453)%getbiomedata(biome,"maxmines")
                 
                 return v
+            return 0
+        
+    def getFlagValue(self, x:int, y:int) -> int:
+        """Return the tile s flag value, 0 otherwise."""
+        if (x//16, y//16) in self.chunks.keys():
+            return self.chunks[(x//16, y//16)].tiles[(x%16, y%16)].flags
+        else:
             return 0
         
     
