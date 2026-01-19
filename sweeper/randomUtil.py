@@ -1,15 +1,15 @@
 import math
 import random
-def coordinateRng(x: int, y: int, seed: int) -> float:
+def coordinateRng(x: float, y: float, seed: float) -> float:
     """Generate a random value based on coordinates and seed.
     """
-    random.seed((seed*81734) ^ (x*127492) ^ (y*5830492)) #Joli ranndom tout beau tout propre :D
+    random.seed(int(seed*81734) ^ int(x*127492) ^ int(y*5830492)) #Joli ranndom tout beau tout propre :D
     return random.random()
 
-def coordinateChoice(x: int, y: int, seed: int, choices: list) -> any:
+def coordinateChoice(x: float, y: float, seed: float, choices: list) -> any:
     """Choose a random element from a list based on coordinates and seed.
     """
-    random.seed(seed ^ x ^ y)
+    random.seed(int(seed*730201) ^ int(x*82345) ^ int(y*777643))
     return random.choice(choices)
 
 
@@ -20,41 +20,38 @@ class VoronoiGen:
     def __init__(self, seed: int, scale: int) -> None:
         self.seed = seed
         self.scale = scale
+        self.pointMap = {}
+        self.pointBiomeMap = {}
 
-    def get_value(self, x: int, y: int, biomes:list) -> float:
+    def get_value(self, x: int, y: int, biomes: list) -> any:
         """Get Voronoi noise value at given coordinates.
 
         Generate the point grid around the coordinates, find the closest
-        point and return its distance to (x, y).
+        point and return its biome based on Voronoi cell pattern.
         """
-        grid_origin_x = x // self.scale
-        grid_origin_y = y // self.scale
-        closest_dist = float('inf')
-        closest_point = None
+        closestDist = float('inf')
+        closestPoint = None
 
+        # Check all surrounding grid cells
         for i in range(-1, 2):
             for j in range(-1, 2):
-                grid_x = grid_origin_x + i
-                grid_y = grid_origin_y + j
-                grid_x_scaled = grid_x * self.scale
-                grid_y_scaled = grid_y * self.scale
-                
-                offset_x = coordinateRng(grid_x_scaled, grid_y_scaled, self.seed)
-                offset_y = coordinateRng(grid_x_scaled, grid_y_scaled, self.seed + 1)
-                
-                pt_x = (grid_x + offset_x) * self.scale
-                pt_y = (grid_y + offset_y) * self.scale
-                
-                dist = math.hypot(pt_x - x, pt_y - y)
-                
-                if dist < closest_dist:
-                    closest_dist = dist
-                    closest_point = (pt_x, pt_y)
+                gridX = (x // self.scale + i) * self.scale
+                gridY = (y // self.scale + j) * self.scale
 
-        return coordinateChoice(int(closest_point[0]), int(closest_point[1]), self.seed + 2,biomes)
+                # Generate or retrieve point for this grid cell
+                if (gridX, gridY) not in self.pointMap:
+                    ptX = gridX + coordinateRng(gridX, gridY, self.seed) * self.scale
+                    ptY = gridY + coordinateRng(gridX, gridY, self.seed + 1) * self.scale
+                    self.pointMap[(gridX, gridY)] = (ptX, ptY)
+                    self.pointBiomeMap[(gridX, gridY)] = coordinateChoice(gridX, gridY, self.seed + 2, biomes)
+                
+                ptX, ptY = self.pointMap[(gridX, gridY)]
+                dist = math.hypot(ptX - x, ptY - y)
+                
+                if dist < closestDist:
+                    closestDist = dist
+                    closestPoint = (gridX, gridY)
+
+        return self.pointBiomeMap[closestPoint]
 
 
-
-if __name__ == "__main__":
-    gen = VoronoiGen(42, 50)
-    print(gen.get_value(1101, 200))

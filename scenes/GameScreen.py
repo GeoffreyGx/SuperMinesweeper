@@ -11,13 +11,12 @@ class GameScreen(Scene):
     camera = utils.camera.Camera()
     def __init__(self):
         super().__init__()
+        pygame.font.init()
+        self.scoreFont = pygame.font.SysFont('Impact', 30)
         self.PAUSE_BUTTON = ClickableAsset("pause_button", 30, 30, 30, 30)
         self.SAVE_BUTTON = ClickableAsset("save_button", 70, 30, 30, 30)
         self.HELP_BUTTON = ClickableAsset("help_button", 110, 30, 30, 30)
         self.world = sweeper_world.World(42)
-        for x in range(0,17):
-            for y in range(0,17):
-                self.world.uncoverAt(x, y)
 
     def update(self):
         self.previous_scene = self
@@ -31,18 +30,30 @@ class GameScreen(Scene):
             self.camera.left()
         if kb_input[pygame.K_d]:
             self.camera.right()
+        self.camera.tick()
         
         for event in events:
-            if self.PAUSE_BUTTON.handle_event(event) == True:
+            if self.PAUSE_BUTTON.handle_event(event):
                 from .PauseMenu import PauseMenu
                 self.switch(PauseMenu(self.previous_scene))
                 logger.debug("Pause Menu was invoked!")
+            if self.world.handle_click_event(event)==1:
+                mouseX, mouseY = event.pos
+                camX, camY = self.camera.vector(0,0)
+                self.world.uncoverAt(int(mouseX-camX)//32, int(mouseY-camY)//32,True,0,True)
+            if self.world.handle_click_event(event)==3:
+                mouseX, mouseY = event.pos
+                camX, camY = self.camera.vector(0,0)
+                self.world.flagAt(int(mouseX-camX)//32, int(mouseY-camY)//32)
+
 
 
     def render(self, screen):
-        screen.fill("#4A4AD6")
+        screen.fill("#C60045")
+        self.world.tickPending()
         self.world.render(screen, self.camera)
-        pygame.draw.circle(screen, "black", self.camera.vector(0, 0), 2)
         self.PAUSE_BUTTON.render(screen)
         self.SAVE_BUTTON.render(screen)
         self.HELP_BUTTON.render(screen)
+        scoreTxt = self.scoreFont.render("Score: "+str(self.world.score), False, (0, 0, 0))
+        screen.blit(scoreTxt, (0,screen.get_height()-40))
