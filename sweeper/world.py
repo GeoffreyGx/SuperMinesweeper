@@ -101,6 +101,7 @@ class World:
 
     def __init__(self, gameseed:int):
         self.gameseed = gameseed
+        self.score = 0
         self.biomeGen = randomUtil.VoronoiGen(self.gameseed, 16)
         self.chunks = {}
         self.pendingUncover = []  # Queue for tiles to uncover next tick
@@ -123,6 +124,11 @@ class World:
             self.chunks[chunkLoc] = Chunk(chunkLoc[0], chunkLoc[1], self)
         chunk = self.chunks[chunkLoc]
         if not ((chunk.uncovered(x,y) and not chord) or chunk.flagged(x,y)):
+            if not chunk.uncovered(x,y):
+                if self.getMineValue(x,y)>0:
+                    self.score-= self.getMineValue(x,y)*100
+                else:
+                    self.score+=1
             val = chunk.uncover(x, y)
             # If empty with 0 mines nearby, uncover adjacent tiles
             if (val == 0 and spread) or chord:

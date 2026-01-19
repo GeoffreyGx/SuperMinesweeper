@@ -11,6 +11,8 @@ class GameScreen(Scene):
     camera = utils.camera.Camera()
     def __init__(self):
         super().__init__()
+        pygame.font.init()
+        self.scoreFont = pygame.font.SysFont('Impact', 30)
         self.PAUSE_BUTTON = ClickableAsset("pause_button", 30, 30, 30, 30)
         self.SAVE_BUTTON = ClickableAsset("save_button", 70, 30, 30, 30)
         self.HELP_BUTTON = ClickableAsset("help_button", 110, 30, 30, 30)
@@ -50,7 +52,8 @@ class GameScreen(Scene):
         screen.fill("#C60045")
         self.world.tickPending()
         self.world.render(screen, self.camera)
-        pygame.draw.circle(screen, "black", self.camera.vector(0, 0), 2)
         self.PAUSE_BUTTON.render(screen)
         self.SAVE_BUTTON.render(screen)
         self.HELP_BUTTON.render(screen)
+        scoreTxt = self.scoreFont.render("Score: "+str(self.world.score), False, (0, 0, 0))
+        screen.blit(scoreTxt, (0,screen.get_height()-40))
