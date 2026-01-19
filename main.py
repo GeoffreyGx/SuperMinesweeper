@@ -5,6 +5,8 @@ import os
 import utils.camera as camera
 import utils.cursor as cursor
 import scenes.MainMenu as MainMenu
+import scenes.GameScreen as gs
+import scenes.shared
 
 dotenv.load_dotenv(".env")
 
@@ -21,7 +23,7 @@ def main():
     running = True
 
     active_scene = MainMenu.MainMenu()
-    
+    scenes.shared.gameScene = gs.GameScreen()
     while running:
         # Pull events once and reuse them so scenes receive the same event list
         events = pygame.event.get()
@@ -33,7 +35,9 @@ def main():
         active_scene.input(events, pygame.key.get_pressed())
         active_scene.render(screen)
 
-        active_scene = active_scene.next
+        if active_scene.next:
+            active_scene = active_scene.next
+        active_scene.next = None
 
         pygame.display.flip()
         clock.tick(30)

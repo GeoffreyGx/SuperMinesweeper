@@ -3,11 +3,12 @@ import os
 import dotenv
 from scene import Scene
 from elements.UI import Button
+import scenes.shared
 
 dotenv.load_dotenv(".env")
 
-SCREEN_WIDTH = int(str(os.getenv("SCREEN_WIDTH")))
-SCREEN_HEIGHT = int(str(os.getenv("SCREEN_HEIGHT")))
+SCREEN_WIDTH = 1000
+SCREEN_HEIGHT = 600
 
 class PauseMenu(Scene):
     def __init__(self, previous_scene: Scene):
@@ -24,7 +25,7 @@ class PauseMenu(Scene):
         for event in events:
             if self.RESUME_BUTTON.handle_event(event) == True:
                 from .GameScreen import GameScreen
-                self.switch(GameScreen())
+                self.switch(scenes.shared.gameScene)
             if self.MENU_BUTTON.handle_event(event) == True:
                 from .MainMenu import MainMenu
                 self.switch(MainMenu())

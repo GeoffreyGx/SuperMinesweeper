@@ -2,6 +2,7 @@ from scene import *
 from elements.UI import Button
 import logging
 import pygame
+import scenes.shared
 logger = logging.getLogger(__name__)
 
 class MainMenu(Scene):
@@ -15,7 +16,7 @@ class MainMenu(Scene):
         for event in events:
             if self.SINGLEPLAYER_BUTTON.handle_event(event) == True:
                 from .GameScreen import GameScreen
-                self.switch(GameScreen())
+                self.switch(scenes.shared.gameScene)
             if self.MULTIPLAYER_BUTTON.handle_event(event) == True:
                 logger.debug("Multiplayer button has been pressed")
             if self.SETTINGS_BUTTON.handle_event(event) == True:
