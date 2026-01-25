@@ -34,6 +34,9 @@ class ClickableAsset:
     
     def render(self, screen: pygame.Surface):
         if self.hovered:
-            screen.blit(self.asset_hov, self.rect)
+            try:
+                screen.blit(self.asset_hov, self.rect)
+            except:
+                screen.blit(self.asset, self.rect)
         else:
             screen.blit(self.asset, self.rect)

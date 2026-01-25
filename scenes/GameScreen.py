@@ -4,6 +4,7 @@ import utils.camera
 from scene import Scene
 from elements.UI import ClickableAsset
 import sweeper.world as sweeper_world
+import sweeper.saver as saver
 
 logger = logging.getLogger(__name__)
 
@@ -16,7 +17,11 @@ class GameScreen(Scene):
         self.PAUSE_BUTTON = ClickableAsset("pause_button", 30, 30, 30, 30)
         self.SAVE_BUTTON = ClickableAsset("save_button", 70, 30, 30, 30)
         self.HELP_BUTTON = ClickableAsset("help_button", 110, 30, 30, 30)
-        self.world = sweeper_world.World(42)
+        try:
+            loader = saver.WorldLoader()
+            self.world = loader.load("saves/save.json")
+        except:
+            self.world = sweeper_world.World(42)
 
     def update(self):
         self.previous_scene = self
@@ -36,7 +41,10 @@ class GameScreen(Scene):
             if self.PAUSE_BUTTON.handle_event(event):
                 from .PauseMenu import PauseMenu
                 self.switch(PauseMenu(self.previous_scene))
-                logger.debug("Pause Menu was invoked!")
+                break
+            if self.SAVE_BUTTON.handle_event(event):
+                saver.WorldSaver(self.world,"saves/save.json")
+                break
             if self.world.handle_click_event(event)==1:
                 mouseX, mouseY = event.pos
                 camX, camY = self.camera.vector(0,0)

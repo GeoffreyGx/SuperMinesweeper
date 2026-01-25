@@ -99,9 +99,9 @@ class World:
 
     BIOMEDEFAULT = {"mineDensity": 0.1,"bg":(200, 200, 200),"maxmines": 1}
 
-    def __init__(self, gameseed:int):
+    def __init__(self, gameseed:int, score:int = 0):
         self.gameseed = gameseed
-        self.score = 0
+        self.score = score
         self.biomeGen = randomUtil.VoronoiGen(self.gameseed, 16)
         self.chunks = {}
         self.pendingUncover = []  # Queue for tiles to uncover next tick
